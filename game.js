@@ -18,11 +18,13 @@ class Gameplay1 extends AdventureScene {
         const scale = Math.max(this.cameras.main.width / bg.width, this.cameras.main.height / bg.height);
         bg.setScale(scale).setScrollFactor(0);
 
-        const player = this.player = this.physics.add.image(0, 0, 'player').setScale(1);
+        const player = this.player = this.physics.add.sprite(0, 0, 'player').setScale(1);
         player.setPosition(0 + player.displayWidth / 2, height - player.displayHeight / 2).setVelocityX(150);
-        player.body.setSize(player.displayWidth * .5, player.displayHeight * .5, true);
-        player.body.setOffset(player.width - (player.displayWidth * .5 / player.scaleX) / 2, player.height - (player.displayHeight / player.scaleY) / 2);
-
+        const playerNewWidth = player.displayWidth * 0.5;
+        const playerOffsetX = (player.width - playerNewWidth) / 2;
+        player.setBodySize(playerNewWidth, player.displayHeight);
+        player.setOffset(playerOffsetX, 0);
+    
         this.physics.world.gravity.y = 600;
         player.setCollideWorldBounds(true);
         player.body.onWorldBounds = true;
@@ -44,11 +46,18 @@ class Gameplay1 extends AdventureScene {
         const slug = this.slug = this.physics.add.image(0, 0, 'slug').setScale(1);
         slug.setPosition(width - slug.displayWidth / 2, height - slug.displayHeight / 2).setVelocityX(-100);
         slug.setCollideWorldBounds(true);
-
+        const slugNewWidth = slug.displayWidth * 0.5;
+        const slugOffsetX = (slug.width - slugNewWidth) / 2;
+        slug.setBodySize(slugNewWidth, slug.displayHeight);
+        slug.setOffset(slugOffsetX, 0);
 
         const slug2 = this.slug2 = this.physics.add.image(0, 0, 'slug').setScale(1);
         slug2.setPosition(width / 2 - slug2.displayWidth / 2, height - slug2.displayHeight / 2).setVelocityX(-100);
         slug2.setCollideWorldBounds(true);
+        const slug2NewWidth = slug2.displayWidth * 0.5;
+        const slug2OffsetX = (slug2.width - slug2NewWidth) / 2;
+        slug2.setBodySize(slug2NewWidth, slug2.displayHeight);
+        slug2.setOffset(slug2OffsetX, 0);
 
         const fnGameover = (object1, object2) => {
             this.physics.pause();
@@ -91,11 +100,66 @@ class Gameplay2 extends AdventureScene {
     }
 
     onEnter() {
-        this.add.text(50, 50, "That's all!").setFontSize(50);
-        this.add.text(50, 100, "Click anywhere to restart.").setFontSize(20);
-        this.input.on('pointerdown', () => this.scene.start('intro'));
+        const { width, height } = this.scale;
+        const bg = this.bg = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, 'bg');
+        const scale = Math.max(this.cameras.main.width / bg.width, this.cameras.main.height / bg.height);
+        bg.setScale(scale).setScrollFactor(0);
+
+        const player = this.player = this.physics.add.sprite(0, 0, 'player').setScale(1);
+        player.setPosition(0 + player.displayWidth / 2, height - player.displayHeight / 2).setVelocityX(150);
+        const playerNewWidth = player.displayWidth * 0.5;
+        const playerOffsetX = (player.width - playerNewWidth) / 2;
+        player.setBodySize(playerNewWidth, player.displayHeight);
+        player.setOffset(playerOffsetX, 0);
+    
+        this.physics.world.gravity.y = 600;
+        player.setCollideWorldBounds(true);
+        player.body.onWorldBounds = true;
+        this.input.on('pointerdown', () => {
+            if (this.player.body.blocked.down || this.player.body.touching.down) {
+                this.player.setVelocityY(-900);
+            }
+        });
+        this.physics.world.on('worldbounds', (body, up, down, left, right) => {
+            if (body.gameObject === this.player && right) {
+                this.physics.pause();
+                this.cameras.main.fadeOut(1000, 0, 0, 0);
+                this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+                    this.scene.start('gameplay2');
+                });
+            }
+        });
+
+        const snail = this.snail = this.physics.add.image(0, 0, 'snail').setScale(1);
+        snail.setPosition(width - snail.displayWidth / 2, height - snail.displayHeight / 2).setVelocityX(-200);
+        snail.setCollideWorldBounds(true);
+        const snailNewWidth = snail.displayWidth * 0.5;
+        const snailOffsetX = (snail.width - snailNewWidth) / 2;
+        snail.setBodySize(snailNewWidth, snail.displayHeight);
+        snail.setOffset(snailOffsetX, 0);
+
+        const snail2 = this.snail2 = this.physics.add.image(0, 0, 'snail').setScale(1);
+        snail2.setPosition(width / 2 - snail2.displayWidth / 2, height - snail2.displayHeight / 2).setVelocityX(-200);
+        snail2.setCollideWorldBounds(true);
+        const snail2NewWidth = snail2.displayWidth * 0.5;
+        const snail2OffsetX = (snail2.width - snail2) / 2;
+        snail2.setBodySize(snail2NewWidth, snail2.displayHeight);
+        snail2.setOffset(snail2OffsetX, 0);
+
+        const fnGameover = (object1, object2) => {
+            this.physics.pause();
+            this.cameras.main.fadeOut(1000, 0, 0, 0);
+            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+                this.scene.start('gameover');
+            });
+        };
+        this.physics.add.collider(player, snail, fnGameover);
+        this.physics.add.collider(player, snail2, fnGameover);
+        this.physics.add.collider(snail, snail2);
     }
 }
+
+
 
 class Intro extends Phaser.Scene {
     constructor() {
