@@ -7,79 +7,9 @@ class Gameplay1 extends AdventureScene {
         this.load.image('bg', 'assets/background.png');
         this.load.image('player', 'assets/Pillbug.png');
         this.load.image('slug', 'assets/slug.png');
+        this.load.image('snail', 'assets/snail.png');
 
     }
-
-   /* update() {
-        const { bg, sprite, bed, door, desk } = this;
-
-        if (sprite && sprite.body && bg && (sprite.body.velocity.x !== 0 || sprite.body.velocity.y !== 0)) {
-
-            if (this.exitDetected(sprite, bg)
-                || this.collisionDetected(sprite, bed)
-                || this.collisionDetected(sprite, desk)
-                || this.collisionDetected(sprite, door)
-            ) {
-                sprite.body.reset(sprite.x, sprite.y);
-                sprite.anims.stop();
-            }
-        }
-    }
-    collisionDetected(sprite, img) {
-
-        const nextX = sprite.x + (sprite.body.velocity.x / 60);
-        const nextY = sprite.y + (sprite.body.velocity.y / 60);
-
-        const ghostRect = new Phaser.Geom.Rectangle(
-            nextX - (sprite.displayWidth * sprite.originX),
-            nextY - (sprite.displayHeight * sprite.originY),
-            sprite.displayWidth,
-            sprite.displayHeight
-        );
-
-        const imgBounds = img.getBounds();
-        if (Phaser.Geom.Intersects.RectangleToRectangle(imgBounds, ghostRect)) {
-            return true;
-        }
-
-    }
-
-    exitDetected(sprite, img) {
-
-        const nextX = sprite.x + (sprite.body.velocity.x / 60);
-        const nextY = sprite.y + (sprite.body.velocity.y / 60);
-
-        const ghostRect = new Phaser.Geom.Rectangle(
-            nextX - (sprite.displayWidth * sprite.originX),
-            nextY - (sprite.displayHeight * sprite.originY),
-            sprite.displayWidth,
-            sprite.displayHeight
-        );
-
-        const imgBounds = img.getBounds();
-
-        if (Phaser.Geom.Intersects.RectangleToRectangle(ghostRect, imgBounds)) {
-            const halfW = (sprite.displayWidth / 2);
-            const halfH = (sprite.displayHeight / 2);
-
-            const points = [
-                { x: nextX - halfW, y: nextY },
-                { x: nextX + halfW, y: nextY },
-                { x: nextX, y: nextY - halfH },
-                { x: nextX, y: nextY + halfH }
-            ];
-
-            let exitDetected = points.some(p => {
-                const localX = (p.x - imgBounds.x) / img.scaleX;
-                const localY = (p.y - imgBounds.y) / img.scaleY;
-                return this.textures.getPixelAlpha(localX, localY, img.texture.key) === 0;
-            });
-            return exitDetected;
-        }
-            if (!Phaser.Geom.Rectangle.ContainsRect(imgBounds, ghostRect)) {
-                return true; 
-            }
-    }*/
 
 
     onEnter() {
@@ -88,102 +18,82 @@ class Gameplay1 extends AdventureScene {
         const scale = Math.max(this.cameras.main.width / bg.width, this.cameras.main.height / bg.height);
         bg.setScale(scale).setScrollFactor(0);
 
-        const player = this.player = this.add.image(0, 0, 'player').setScale(1);
-        player.setPosition(0+player.displayWidth/2, height-player.displayHeight/2);
+        const player = this.player = this.physics.add.image(0, 0, 'player').setScale(1);
+        player.setPosition(0 + player.displayWidth / 2, height - player.displayHeight / 2).setVelocityX(150);
+        player.body.setSize(player.displayWidth * .5, player.displayHeight * .5, true);
+        player.body.setOffset(player.width - (player.displayWidth * .5 / player.scaleX) / 2, player.height - (player.displayHeight / player.scaleY) / 2);
 
-        const slug = this.slug = this.add.image( 0, 0, 'slug').setScale(1);
-        slug.setPosition(width-slug.displayWidth/2, height-slug.displayHeight/2);
+        this.physics.world.gravity.y = 600;
+        player.setCollideWorldBounds(true);
+        player.body.onWorldBounds = true;
+        this.input.on('pointerdown', () => {
+            if (this.player.body.blocked.down || this.player.body.touching.down) {
+                this.player.setVelocityY(-900);
+            }
+        });
+        this.physics.world.on('worldbounds', (body, up, down, left, right) => {
+            if (body.gameObject === this.player && right) {
+                this.physics.pause();
+                this.cameras.main.fadeOut(1000, 0, 0, 0);
+                this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+                    this.scene.start('gameplay2');
+                });
+            }
+        });
+
+        const slug = this.slug = this.physics.add.image(0, 0, 'slug').setScale(1);
+        slug.setPosition(width - slug.displayWidth / 2, height - slug.displayHeight / 2).setVelocityX(-100);
+        slug.setCollideWorldBounds(true);
 
 
+        const slug2 = this.slug2 = this.physics.add.image(0, 0, 'slug').setScale(1);
+        slug2.setPosition(width / 2 - slug2.displayWidth / 2, height - slug2.displayHeight / 2).setVelocityX(-100);
+        slug2.setCollideWorldBounds(true);
 
-        /*  let clip = this.add.text(this.w * 0.3, this.w * 0.3, "📎 paperclip")
-              .setFontSize(this.s * 2)
-              .setInteractive()
-              .on('pointerover', () => this.showMessage("Metal, bent."))
-              .on('pointerdown', () => {
-                  this.showMessage("No touching!");
-                  this.tweens.add({
-                      targets: clip,
-                      x: '+=' + this.s,
-                      repeat: 2,
-                      yoyo: true,
-                      ease: 'Sine.inOut',
-                      duration: 100
-                  });
-              });
-  
-          let key = this.add.text(this.w * 0.5, this.w * 0.1, "🔑 key")
-              .setFontSize(this.s * 2)
-              .setInteractive()
-              .on('pointerover', () => {
-                  this.showMessage("It's a nice key.")
-              })
-              .on('pointerdown', () => {
-                  this.showMessage("You pick up the key.");
-                  this.gainItem('key');
-                  this.tweens.add({
-                      targets: key,
-                      y: `-=${2 * this.s}`,
-                      alpha: { from: 1, to: 0 },
-                      duration: 500,
-                      onComplete: () => key.destroy()
-                  });
-              })
-  
-          let door = this.add.text(this.w * 0.1, this.w * 0.15, "🚪 locked door")
-              .setFontSize(this.s * 2)
-              .setInteractive()
-              .on('pointerover', () => {
-                  if (this.hasItem("key")) {
-                      this.showMessage("You've got the key for this door.");
-                  } else {
-                      this.showMessage("It's locked. Can you find a key?");
-                  }
-              })
-              .on('pointerdown', () => {
-                  if (this.hasItem("key")) {
-                      this.loseItem("key");
-                      this.showMessage("*squeak*");
-                      door.setText("🚪 unlocked door");
-                      this.gotoScene('demo2');
-                  }
-              }) */
-
+        const fnGameover = (object1, object2) => {
+            this.physics.pause();
+            this.cameras.main.fadeOut(1000, 0, 0, 0);
+            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+                this.scene.start('gameover');
+            });
+        };
+        this.physics.add.collider(player, slug, fnGameover);
+        this.physics.add.collider(player, slug2, fnGameover);
+        this.physics.add.collider(slug, slug2);
     }
 }
 
-class Demo2 extends AdventureScene {
+class Gameover extends AdventureScene {
     constructor() {
-        super("demo2", "The second room has a long name (it truly does).");
+        super("gameover", "Start Over");
     }
     preload() {
 
     }
 
     onEnter() {
-        this.add.text(this.w * 0.3, this.w * 0.4, "just go back")
-            .setFontSize(this.s * 2)
-            .setInteractive()
-            .on('pointerover', () => {
-                this.showMessage("You've got no other choice, really.");
-            })
-            .on('pointerdown', () => {
-                this.gotoScene('demo1');
-            });
+        this.add.text(50, 50, "That's all!").setFontSize(50);
+        this.add.text(50, 100, "Click anywhere to restart.").setFontSize(20);
+        this.input.on('pointerdown', () => this.scene.start('intro'));
+    }
+}
 
-        let finish = this.add.text(this.w * 0.6, this.w * 0.2, '(finish the game)')
-            .setInteractive()
-            .on('pointerover', () => {
-                this.showMessage('*giggles*');
-                this.tweens.add({
-                    targets: finish,
-                    x: this.s + (this.h - 2 * this.s) * Math.random(),
-                    y: this.s + (this.h - 2 * this.s) * Math.random(),
-                    ease: 'Sine.inOut',
-                    duration: 500
-                });
-            })
-            .on('pointerdown', () => this.gotoScene('outro'));
+class Gameplay2 extends AdventureScene {
+    constructor() {
+        super("gameplay2", "That's good work! Watch out for snails!");
+    }
+    preload() {
+        this.load.setBaseURL('https://katm6211.github.io/s6-rapid-prototyping/');
+        this.load.image('bg', 'assets/background.png');
+        this.load.image('player', 'assets/Pillbug.png');
+        this.load.image('slug', 'assets/slug.png');
+        this.load.image('snail', 'assets/snail.png');
+    }
+
+    onEnter() {
+        this.add.text(50, 50, "That's all!").setFontSize(50);
+        this.add.text(50, 100, "Click anywhere to restart.").setFontSize(20);
+        this.input.on('pointerdown', () => this.scene.start('intro'));
     }
 }
 
@@ -203,7 +113,7 @@ class Intro extends Phaser.Scene {
         const start = this.add.image(width / 2, height / 2, 'start');
         start.setScale(0.35);
 
-        this.add.text(width/2, 100, "Tap to Start").setFontSize(50).setOrigin(0.5);
+        this.add.text(width / 2, 100, "Tap to Start").setFontSize(50).setOrigin(0.5);
         this.input.on('pointerdown', () => {
             this.cameras.main.fade(1000, 0, 0, 0);
             this.time.delayedCall(1000, () => this.scene.start('gameplay1'));
@@ -237,7 +147,7 @@ const game = new Phaser.Game({
             debug: false
         }
     },
-    scene: [Intro, Gameplay1],
+    scene: [Intro, Gameplay1, Gameover, Gameplay2],
     title: "Roly Poly: To the End",
 });
 
