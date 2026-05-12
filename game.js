@@ -38,7 +38,7 @@ class Gameplay1 extends AdventureScene {
                 this.physics.pause();
                 this.cameras.main.fadeOut(1000, 0, 0, 0);
                 this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
-                    this.scene.start('gameplay2');
+                    this.scene.start('message2');
                 });
             }
         });
@@ -125,7 +125,7 @@ class Gameplay2 extends AdventureScene {
                 this.physics.pause();
                 this.cameras.main.fadeOut(1000, 0, 0, 0);
                 this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
-                    this.scene.start('gameplay3');
+                    this.scene.start('message3');
                 });
             }
         });
@@ -218,7 +218,7 @@ class Gameplay3 extends AdventureScene {
         slug2.setOffset(slug2OffsetX, 0);
 
         const snail = this.snail = this.physics.add.image(0, 0, 'snail').setScale(1);
-        snail.setPosition(width * 3/4 - snail.displayWidth / 2, height  - snail.displayHeight / 2).setVelocityX(-200);
+        snail.setPosition(width * 3 / 4 - snail.displayWidth / 2, height - snail.displayHeight / 2).setVelocityX(-200);
         snail.setCollideWorldBounds(true);
         const snailNewWidth = snail.displayWidth * 0.5;
         const snailOffsetX = (snail.width - snailNewWidth) / 2;
@@ -263,7 +263,7 @@ class Intro extends Phaser.Scene {
         this.add.text(width / 2, 100, "Tap to Start").setFontSize(50).setOrigin(0.5);
         this.input.on('pointerdown', () => {
             this.cameras.main.fade(1000, 0, 0, 0);
-            this.time.delayedCall(1000, () => this.scene.start('victory'));
+            this.time.delayedCall(1000, () => this.scene.start('message1'));
         });
     }
 }
@@ -274,18 +274,130 @@ class Victory extends Phaser.Scene {
     }
     preload() {
         this.load.setBaseURL('https://katm6211.github.io/s6-rapid-prototyping/');
-        this.load.image('bg', 'assets/trophy.png');;
+        this.load.image('trophy', 'assets/trophy.png');
     }
     create() {
         const { width, height } = this.scale;
-        const trophy = this.trophy = this.physics.add.image(width/2, height/2, 'trophy').setScale(1);
+        const trophy = this.trophy = this.physics.add.image(width / 2, height / 2, 'trophy').setScale(3);
 
         this.add.text(50, 50, "The roly poly gets a badge!").setFontSize(50);
         this.add.text(50, 100, "Click anywhere to restart.").setFontSize(20);
         this.input.on('pointerdown', () => this.scene.start('intro'));
     }
 }
+class Message1 extends Phaser.Scene {
+    constructor() {
+        super('message1');
+    }
+    preload() {
+        this.load.setBaseURL('https://katm6211.github.io/s6-rapid-prototyping/');
 
+    }
+    create() {
+        const { width, height } = this.scale;
+        this.add.text(width / 2, 100, "Watch out for slugs!").setFontSize(50).setOrigin(0.5);
+        this.cameras.main.fadeOut(2000, 0, 0, 0);
+        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+            this.scene.start('gameplay1');
+        });
+    }
+}
+
+class Message2 extends Phaser.Scene {
+    constructor() {
+        super('message2');
+    }
+    preload() {
+        this.load.setBaseURL('https://katm6211.github.io/s6-rapid-prototyping/');
+
+    }
+    create() {
+        const { width, height } = this.scale;
+        const text1 = this.add.text(width / 2, 100, "That's good work!").setFontSize(50).setAlpha(0).setOrigin(0.5);
+        const text2 = this.add.text(width / 2, 100, "Watch out for snails!").setFontSize(50).setAlpha(0).setOrigin(0.5);
+
+        this.tweens.chain({
+            tweens: [
+                {
+                    targets: text1,
+                    alpha: 1,
+                    duration: 2000,
+                    ease: 'Power2',
+                    onComplete: () => {
+                        this.tweens.add({
+                            targets: text1,
+                            alpha: 0,
+                            duration: 1000,
+                            ease: 'Power2'
+                        })
+                    }
+
+                },
+                {
+                    targets: text2,
+                    alpha: 1,
+                    duration: 2000,
+                    ease: 'Power2',
+                    onComplete: () => {
+                        this.cameras.main.fadeOut(2000, 0, 0, 0);
+                        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+                            this.scene.start('gameplay2');
+
+                        });
+                    }
+                }
+            ]
+        });
+    }
+}
+
+class Message3 extends Phaser.Scene {
+    constructor() {
+        super('message3');
+    }
+    preload() {
+        this.load.setBaseURL('https://katm6211.github.io/s6-rapid-prototyping/');
+
+    }
+    create() {
+        const { width, height } = this.scale;
+        const text1 = this.add.text(width / 2, 100, "Good job!").setFontSize(50).setAlpha(0).setOrigin(0.5);
+        const text2 = this.add.text(width / 2, 100, "This is the last level!").setFontSize(50).setAlpha(0).setOrigin(0.5);
+
+        this.tweens.chain({
+            tweens: [
+                {
+                    targets: text1,
+                    alpha: 1,
+                    duration: 2000,
+                    ease: 'Power2',
+                    onComplete: () => {
+                        this.tweens.add({
+                            targets: text1,
+                            alpha: 0,
+                            duration: 1000,
+                            ease: 'Power2'
+                        })
+                    }
+
+                },
+                {
+                    targets: text2,
+                    alpha: 1,
+                    duration: 2000,
+                    ease: 'Power2',
+                    onComplete: () => {
+                        this.cameras.main.fadeOut(2000, 0, 0, 0);
+                        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+                            this.scene.start('gameplay3');
+
+                        });
+                    }
+                }
+            ]
+        });
+    }
+}
 
 const game = new Phaser.Game({
     scale: {
@@ -301,7 +413,7 @@ const game = new Phaser.Game({
             debug: false
         }
     },
-    scene: [Intro, Gameplay1, Gameover, Gameplay2, Gameplay3, Victory],
+    scene: [Intro, Gameplay1, Gameover, Gameplay2, Gameplay3, Victory, Message1, Message2, Message3],
     title: "Roly Poly: To the End",
 });
 
