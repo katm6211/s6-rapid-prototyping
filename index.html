@@ -1,24 +1,16 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventure Game</title>
+    <script src="lib/phaser.js"></script>
+    <script src="adventure.js"></script>
+    <script src="game.js"></script>
 </head>
 <body>
-
-    <script src="src/scenes/Title.js"></script>
     
-    <script>
-    const config = {
-        type: Phaser.AUTO,
-
-        width: 640,
-        height: 360,
-        backgroundColor: '#e0dbc7',
-        scene: [Title, Gameplay1, Gameplay2, Gameplay3, Victory, Gameover ]
-    };
-
-    const game = new Phaser.Game(config);
-    </script>
-
 </body>
 </html>
