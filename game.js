@@ -254,11 +254,10 @@ class Intro extends Phaser.Scene {
     }
     create() {
         const { width, height } = this.scale;
-        const start = this.add.image(width / 4, height / 2, 'start');
+        const start = this.add.image(width / 2, height / 2, 'start');
         start.setScale(0.35);
 
-        this.add.text(50, 50, "").setFontSize(50);
-        this.add.text(50, 100, "Tap to Start").setFontSize(20);
+        this.add.text(width/2, 100, "Tap to Start").setFontSize(50).setOrigin(0.5);
         this.input.on('pointerdown', () => {
             this.cameras.main.fade(1000, 0, 0, 0);
             this.time.delayedCall(1000, () => this.scene.start('gameplay1'));
