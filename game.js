@@ -1,17 +1,16 @@
-class Demo1 extends AdventureScene {
+class Gameplay1 extends AdventureScene {
     constructor() {
-        super("demo1", "Room");
+        super("gameplay1", "Watch out for slugs!");
     }
     preload() {
-        this.load.setBaseURL('https://katm6211.github.io/d3project/');
-        this.load.image('bg', 'Assets/scene1bedroom/Background3.png');
-        this.load.image('bed', 'Assets/scene1bedroom/bed2.png');
-        this.load.image('desk', 'Assets/scene1bedroom/desk2.png');
-        this.load.image('door', 'Assets/scene1bedroom/door2.png');
-        this.load.spritesheet('sprite', 'Assets/scene1bedroom/totalsprite2.2.png', { frameWidth: 14, frameHeight: 30 });
+        this.load.setBaseURL('https://katm6211.github.io/s6-rapid-prototyping/');
+        this.load.image('bg', 'assets/background.png');
+        this.load.image('player', 'assets/Pillbug.png');
+        this.load.image('slug', 'assets/slug.png');
+
     }
 
-    update() {
+   /* update() {
         const { bg, sprite, bed, door, desk } = this;
 
         if (sprite && sprite.body && bg && (sprite.body.velocity.x !== 0 || sprite.body.velocity.y !== 0)) {
@@ -80,73 +79,20 @@ class Demo1 extends AdventureScene {
             if (!Phaser.Geom.Rectangle.ContainsRect(imgBounds, ghostRect)) {
                 return true; 
             }
-    }
+    }*/
 
 
     onEnter() {
         const { width, height } = this.scale;
-        const bg = this.bg = this.add.image(width * 3 / 4 / 2, height / 2, 'bg').setScale(4);
-        const sprite = this.sprite = this.physics.add.sprite(bg.x, bg.y, 'sprite').setScale(4);
-        sprite.x = bg.x - 1/2 * bg.displayWidth + 1/2 * sprite.displayWidth;
-        
-        const door = this.door = this.add.image(bg.x, bg.y, 'door').setScale(4);
-        door.x = bg.x - 1 / 8 * bg.displayWidth;
-        door.y = bg.y - 1 / 2 * bg.displayHeight - 1 / 2 * door.displayHeight;
-        const desk = this.desk = this.add.image(bg.x, bg.y, 'desk').setScale(4);
-        desk.y = bg.y - 1 / 2 * bg.displayHeight + 1 / 2 * desk.displayHeight;
-        const bed = this.bed = this.add.image(bg.x, bg.y, 'bed').setScale(4);
+        const bg = this.bg = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, 'bg');
+        const scale = Math.max(this.cameras.main.width / bg.width, this.cameras.main.height / bg.height);
+        bg.setScale(scale).setScrollFactor(0);
 
+        const player = this.player = this.add.image(0, 0, 'player').setScale(1);
+        player.setPosition(0+player.displayWidth/2, height-player.displayHeight/2);
 
-        this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('sprite', { start: 0, end: 2 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'front',
-            frames: this.anims.generateFrameNumbers('sprite', { start: 6, end: 8 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers('sprite', { start: 3, end: 5 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'back',
-            frames: this.anims.generateFrameNumbers('sprite', { start: 9, end: 11 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.input.on('pointerup', (pointer) => {
-            sprite.body.reset(sprite.x, sprite.y);
-            sprite.anims.stop();
-        });
-
-        this.input.on('pointerdown', (pointer) => {
-            this.physics.moveToObject(sprite, pointer, 200);
-
-            if (pointer.x == sprite.x && pointer.y < sprite.y) {
-                sprite.anims.play('front', true);
-            } else if (pointer.x == sprite.x && pointer.y > sprite.y) {
-                sprite.anims.play('back', true);
-            } else {
-                const slope = Math.abs((pointer.y - sprite.y) / (pointer.x - sprite.x))
-                if (pointer.x < sprite.x && slope <= 1) {
-                    sprite.anims.play('left', true);
-                } else if (pointer.x > sprite.x && slope <= 1) {
-                    sprite.anims.play('right', true);
-                }
-                if (pointer.y < sprite.y && slope > 1) {
-                    sprite.anims.play('back', true);
-                } else if (pointer.y > sprite.y && slope > 1) {
-                    sprite.anims.play('front', true);
-                }
-            }
-        });
+        const slug = this.slug = this.add.image( 0, 0, 'slug').setScale(1);
+        slug.setPosition(width-slug.displayWidth/2, height-slug.displayHeight/2);
 
 
 
@@ -291,7 +237,7 @@ const game = new Phaser.Game({
             debug: false
         }
     },
-    scene: [Intro],
+    scene: [Intro, Gameplay1],
     title: "Roly Poly: To the End",
 });
 
