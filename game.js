@@ -263,7 +263,7 @@ class Intro extends Phaser.Scene {
         this.add.text(width / 2, 100, "Tap to Start").setFontSize(50).setOrigin(0.5);
         this.input.on('pointerdown', () => {
             this.cameras.main.fade(1000, 0, 0, 0);
-            this.time.delayedCall(1000, () => this.scene.start('gameplay3'));
+            this.time.delayedCall(1000, () => this.scene.start('victory'));
         });
     }
 }
@@ -272,7 +272,14 @@ class Victory extends Phaser.Scene {
     constructor() {
         super('victory');
     }
+    preload() {
+        this.load.setBaseURL('https://katm6211.github.io/s6-rapid-prototyping/');
+        this.load.image('bg', 'assets/trophy.png');;
+    }
     create() {
+        const { width, height } = this.scale;
+        const trophy = this.trophy = this.physics.add.image(width/2, height/2, 'trophy').setScale(1);
+
         this.add.text(50, 50, "The roly poly gets a badge!").setFontSize(50);
         this.add.text(50, 100, "Click anywhere to restart.").setFontSize(20);
         this.input.on('pointerdown', () => this.scene.start('intro'));
