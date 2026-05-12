@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
+</head>
+<body>
+
+    <script src="src/scenes/Title.js"></script>
+    
+    <script>
+    const config = {
+        type: Phaser.AUTO,
+
+        width: 640,
+        height: 360,
+        backgroundColor: '#e0dbc7',
+        scene: [Title, Gameplay1, Gameplay2, Gameplay3, Victory, Gameover ]
+    };
+
+    const game = new Phaser.Game(config);
+    </script>
+
+</body>
+</html>
