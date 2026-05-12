@@ -12,14 +12,12 @@ class Title extends Phaser.Scene {
 
     create() {
         const { width, height } = this.scale;
-        this.add.text(250, 300, 'Press Any Key or Click to Start', { fill: '#fff' });
-        const startGame = () => {
-            this.input.keyboard.off('keydown', startGame);
-            this.input.off('pointerdown', startGame);
-            this.scene.start('TitleScene');
-        };
-        this.input.keyboard.on('keydown', startGame);
-        this.input.on('pointerdown', startGame);
+        const start = this.add.image(width / 4, height / 2, 'start');
+        start.setScale(0.35);
 
+        this.add.text(100, 300, 'Tap to Start', { fontSize: '32px' });
+        this.input.on('pointerdown', function (pointer) {
+            this.scene.start('Gameplay1');
+        }, this);
     }
 }
