@@ -131,7 +131,7 @@ class Gameplay2 extends AdventureScene {
         });
 
         const snail = this.snail = this.physics.add.image(0, 0, 'snail').setScale(1);
-        snail.setPosition(width - snail.displayWidth / 2, height - snail.displayHeight / 2).setVelocityX(-200);
+        snail.setPosition(width - snail.displayWidth / 2, height - snail.displayHeight / 2).setVelocityX(-100);
         snail.setCollideWorldBounds(true);
         const snailNewWidth = snail.displayWidth * 0.5;
         const snailOffsetX = (snail.width - snailNewWidth) / 2;
@@ -139,7 +139,7 @@ class Gameplay2 extends AdventureScene {
         snail.setOffset(snailOffsetX, 0);
 
         const snail2 = this.snail2 = this.physics.add.image(0, 0, 'snail').setScale(1);
-        snail2.setPosition(width / 2 - snail2.displayWidth / 2, height - snail2.displayHeight / 2).setVelocityX(-200);
+        snail2.setPosition(width / 2 - snail2.displayWidth / 2, height - snail2.displayHeight / 2).setVelocityX(-100);
         snail2.setCollideWorldBounds(true);
         const snail2NewWidth = snail2.displayWidth * 0.5;
         const snail2OffsetX = (snail2.width - snail2) / 2;
@@ -180,7 +180,7 @@ class Intro extends Phaser.Scene {
         this.add.text(width / 2, 100, "Tap to Start").setFontSize(50).setOrigin(0.5);
         this.input.on('pointerdown', () => {
             this.cameras.main.fade(1000, 0, 0, 0);
-            this.time.delayedCall(1000, () => this.scene.start('gameplay1'));
+            this.time.delayedCall(1000, () => this.scene.start('gameplay2'));
         });
     }
 }
